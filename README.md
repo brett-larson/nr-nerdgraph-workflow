@@ -1,4 +1,4 @@
-# nr-nerdgraph-workflow-template
+# New Relic NerdGraph Workflow Template
 
 This repository provides a template for creating New Relic NerdGraph workflows to accomplish various tasks.
 
