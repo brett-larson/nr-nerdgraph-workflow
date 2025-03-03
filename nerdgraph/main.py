@@ -15,6 +15,6 @@ def main():
 
 
     logger.info("**********Ending the NerdGraph API Application**********")
-    
+
 if __name__ == '__main__':
     main()
