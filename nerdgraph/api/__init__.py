@@ -1,4 +1,3 @@
-from .nerdgraph_client import NerdGraphClient
-from .rate_limiter import RateLimiter
+from .nerdgraph_client import AsyncNerdGraphClient
 
-__all__ = [ "NerdGraphClient", "RateLimiter" ]
+__all__ = [ "AsyncNerdGraphClient" ]
