@@ -1,3 +1,3 @@
-from .nerdgraph_client import AsyncNerdGraphClient
+from .nerdgraph_client import NerdGraphClient
 
-__all__ = "AsyncNerdGraphClient"
+__all__ = ["NerdGraphClient"]
