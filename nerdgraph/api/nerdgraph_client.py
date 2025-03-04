@@ -1,16 +1,24 @@
+import logging
+
 import aiohttp
 import asyncio
 from typing import Optional, Dict, Any, List, Union, Callable
 import os
-from nerdgraph.utils import Logger
+from nerdgraph.utils import AppLogger
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Create logger for the module
-logger = Logger(__name__).get_logger()
-
+# Initialize the logger
+logger = AppLogger(
+    __name__,
+    log_dir="logs",
+    log_level=logging.INFO,
+    enable_console=True,
+    max_file_size=10 * 1024 * 1024,  # 10 MB
+    backup_count=5
+).get_logger()
 
 class AsyncNerdGraphClient:
     """

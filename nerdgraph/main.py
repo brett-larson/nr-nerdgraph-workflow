@@ -1,20 +1,46 @@
+import asyncio
+import logging
+
 from utils import AppLogger
-from datetime import timedelta
-from api.rate_limiter import RateLimiter
-from api.nerdgraph_client import NerdGraphClient
+from api.queries.accounts import AccountQueries
+from api.queries.nrql_queries import NrqlQueries
+from api.nerdgraph_client import AsyncNerdGraphClient
 
 # Initialize the logger
-logger = AppLogger.get_instance(__name__).get_logger()
+logger = AppLogger(
+    __name__,
+    log_dir="logs",
+    log_level=logging.INFO,
+    enable_console=True,
+    max_file_size=10 * 1024 * 1024,  # 10 MB
+    backup_count=5
+).get_logger()
 
-def main():
+# Example of how to use these components together
+async def main():
+    # Initialize the client with rate limiting
+    client = AsyncNerdGraphClient(max_concurrency=25)
 
-    logger.info("**********Starting the NerdGraph API Application**********")
-    rate_limiter = RateLimiter(1000, timedelta(minutes=1))
-    nerdgraph_client = NerdGraphClient()
+    # Get all accounts
+    accounts = await AccountQueries.get_all_accounts(client)
+    print(f"Found {len(accounts)} accounts")
+
+    # Run a query across all accounts
+    results = await NrqlQueries.run_query_across_accounts(
+        client=client,
+        nrql="SELECT count(*) FROM Transaction SINCE 1 day ago",
+        accounts=accounts
+    )
+
+    # Process results
+    for result in results:
+        account_id = result['account_id']
+        if "error" in result:
+            print(f"Error for account {account_id}: {result['error']}")
+        else:
+            count = result['results'][0].get('count', 'N/A') if result['results'] else 'No data'
+            print(f"Account {account_id}: {count} transactions")
 
 
-
-    logger.info("**********Ending the NerdGraph API Application**********")
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    asyncio.run(main())
